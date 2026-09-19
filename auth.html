@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In &amp; Account — TaskFlow</title>
+  <meta name="description" content="Sign in or create an account for TaskFlow to sync tasks, preferences, and lists across devices." />
+
+  <!-- Immediate Theme & Aesthetics Initialization (Zero Flash) -->
+  <script>
+    (function() {
+      try {
+        const raw = localStorage.getItem('taskflow_preferences');
+        if (raw) {
+          const prefs = JSON.parse(raw);
+          if (prefs.themeMode === 'system') {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+          } else if (prefs.themeMode) {
+            document.documentElement.setAttribute('data-theme', prefs.themeMode);
+          }
+          if (prefs.accentColor) document.documentElement.setAttribute('data-accent', prefs.accentColor);
+          if (prefs.fontFamily) document.documentElement.setAttribute('data-font', prefs.fontFamily);
+          if (prefs.bgStyle) document.documentElement.setAttribute('data-bg', prefs.bgStyle);
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,300&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body class="auth-page">
+
+  <!-- Ambient background glow -->
+  <div class="auth-ambient-glow" aria-hidden="true"></div>
+
+  <!-- Top Navigation Controls -->
+  <nav class="auth-top-nav" aria-label="Authentication navigation">
+    <a href="index.html" class="auth-nav-link" id="backToAppBtn" title="Return to task dashboard">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back to Tasks</span>
+    </a>
+
+    <button id="authThemeToggle" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">
+      <svg class="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+    </button>
+  </nav>
+
+  <!-- Authentication Card -->
+  <main class="auth-card" role="main">
+    
+    <!-- Brand Header -->
+    <header class="auth-header">
+      <div class="auth-logo" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <h1 class="auth-title">TaskFlow</h1>
+      <p class="auth-subtitle" id="authSubtitle">Focus &amp; Productivity Cloud Sync</p>
+    </header>
+
+    <!-- Global Alert / Notification Banner -->
+    <div id="authAlert" class="auth-alert hidden" role="alert">
+      <span id="authAlertIcon" aria-hidden="true"></span>
+      <span id="authAlertText"></span>
+    </div>
+
+    <!-- Mode Selector Tabs (Sign In / Sign Up) -->
+    <div class="auth-tabs" id="authTabs" role="tablist">
+      <button type="button" class="auth-tab-btn active" id="tabSignIn" role="tab" aria-selected="true" aria-controls="viewSignIn">
+        Sign In
+      </button>
+      <button type="button" class="auth-tab-btn" id="tabSignUp" role="tab" aria-selected="false" aria-controls="viewSignUp">
+        Create Account
+      </button>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- VIEW 1: SIGN IN -->
+    <!-- ================================================================= -->
+    <section class="auth-view active" id="viewSignIn" role="tabpanel" aria-labelledby="tabSignIn">
+      <form id="signInForm" autocomplete="on" novalidate>
+        
+        <div class="auth-form-group">
+          <label class="auth-label" for="signInEmail">Email Address</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </span>
+            <input 
+              type="email" 
+              id="signInEmail" 
+              class="auth-input" 
+              placeholder="you@example.com" 
+              required 
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <div class="auth-form-group">
+          <label class="auth-label" for="signInPassword">Password</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </span>
+            <input 
+              type="password" 
+              id="signInPassword" 
+              class="auth-input" 
+              placeholder="••••••••" 
+              required 
+              autocomplete="current-password"
+            />
+            <button type="button" class="auth-toggle-pwd" data-target="signInPassword" aria-label="Toggle password visibility">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="auth-row-options">
+          <label class="auth-checkbox-label">
+            <input type="checkbox" id="rememberMe" class="auth-checkbox" checked />
+            <span>Remember me</span>
+          </label>
+          <a href="#forgot" class="auth-link" id="goToForgotBtn">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-auth-primary" id="signInSubmitBtn">
+          <span class="btn-text">Sign In</span>
+        </button>
+
+      </form>
+
+      <div class="auth-divider">or continue offline</div>
+
+      <a href="index.html" class="btn-auth-guest" id="continueGuestBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        <span>Continue as Guest</span>
+      </a>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- VIEW 2: CREATE ACCOUNT (SIGN UP) -->
+    <!-- ================================================================= -->
+    <section class="auth-view" id="viewSignUp" role="tabpanel" aria-labelledby="tabSignUp">
+      <form id="signUpForm" autocomplete="on" novalidate>
+        
+        <div class="auth-form-group">
+          <label class="auth-label" for="signUpName">Full Name</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </span>
+            <input 
+              type="text" 
+              id="signUpName" 
+              class="auth-input" 
+              placeholder="Jane Doe" 
+              required 
+              autocomplete="name"
+            />
+          </div>
+        </div>
+
+        <div class="auth-form-group">
+          <label class="auth-label" for="signUpEmail">Email Address</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </span>
+            <input 
+              type="email" 
+              id="signUpEmail" 
+              class="auth-input" 
+              placeholder="you@example.com" 
+              required 
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <div class="auth-form-group">
+          <label class="auth-label" for="signUpPassword">Password</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </span>
+            <input 
+              type="password" 
+              id="signUpPassword" 
+              class="auth-input" 
+              placeholder="Min. 6 characters" 
+              required 
+              autocomplete="new-password"
+            />
+            <button type="button" class="auth-toggle-pwd" data-target="signUpPassword" aria-label="Toggle password visibility">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+          <!-- Password Strength Indicator -->
+          <div class="pwd-strength-container" id="pwdStrengthContainer">
+            <div class="pwd-strength-bar">
+              <div class="pwd-strength-fill" id="pwdStrengthFill"></div>
+            </div>
+            <div class="pwd-strength-label">
+              <span>Security level</span>
+              <span id="pwdStrengthText">Enter password</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-form-group">
+          <label class="auth-label" for="signUpConfirmPassword">Confirm Password</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </span>
+            <input 
+              type="password" 
+              id="signUpConfirmPassword" 
+              class="auth-input" 
+              placeholder="Confirm password" 
+              required 
+              autocomplete="new-password"
+            />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-auth-primary" id="signUpSubmitBtn">
+          <span class="btn-text">Create Free Account</span>
+        </button>
+
+      </form>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- VIEW 3: FORGOT PASSWORD -->
+    <!-- ================================================================= -->
+    <section class="auth-view" id="viewForgot" role="tabpanel">
+      <p style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-bottom: var(--space-md); text-align: left;">
+        Enter your account email and we'll send you a secure link to reset your password.
+      </p>
+
+      <form id="forgotForm" novalidate>
+        <div class="auth-form-group">
+          <label class="auth-label" for="forgotEmail">Email Address</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </span>
+            <input 
+              type="email" 
+              id="forgotEmail" 
+              class="auth-input" 
+              placeholder="you@example.com" 
+              required 
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-auth-primary" id="forgotSubmitBtn">
+          <span class="btn-text">Send Reset Link</span>
+        </button>
+      </form>
+
+      <div style="margin-top: var(--space-md); text-align: center;">
+        <button type="button" class="auth-link" id="backToSignInFromForgot" style="background:none; border:none; cursor:pointer; font-size:var(--font-size-xs);">
+          ← Return to Sign In
+        </button>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- VIEW 4: UPDATE PASSWORD (TRIGGERED BY RESET LINK) -->
+    <!-- ================================================================= -->
+    <section class="auth-view" id="viewResetPassword" role="tabpanel">
+      <p style="font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-bottom: var(--space-md); text-align: left;">
+        Choose a new secure password for your TaskFlow account.
+      </p>
+
+      <form id="resetPasswordForm" novalidate>
+        <div class="auth-form-group">
+          <label class="auth-label" for="newPassword">New Password</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </span>
+            <input 
+              type="password" 
+              id="newPassword" 
+              class="auth-input" 
+              placeholder="Min. 6 characters" 
+              required 
+            />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-auth-primary" id="resetPasswordSubmitBtn">
+          <span class="btn-text">Save New Password</span>
+        </button>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Supabase Official JS SDK CDN Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- TaskFlow Supabase Client & Auth Layer -->
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/auth.js"></script>
+
+  <!-- Page Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // DOM Elements
+      const tabSignIn = document.getElementById('tabSignIn');
+      const tabSignUp = document.getElementById('tabSignUp');
+      const authTabs = document.getElementById('authTabs');
+      const viewSignIn = document.getElementById('viewSignIn');
+      const viewSignUp = document.getElementById('viewSignUp');
+      const viewForgot = document.getElementById('viewForgot');
+      const viewResetPassword = document.getElementById('viewResetPassword');
+      const authSubtitle = document.getElementById('authSubtitle');
+      const authAlert = document.getElementById('authAlert');
+      const authAlertText = document.getElementById('authAlertText');
+
+      // Check if user is already logged in
+      if (window.AuthManager) {
+        window.AuthManager.getSession().then(session => {
+          if (session?.user && !window.location.hash.includes('reset')) {
+            showAlert('You are already signed in. Redirecting to your tasks...', 'success');
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 900);
+          }
+        });
+      }
+
+      // Handle Hash Routing (#forgot, #signup, #reset)
+      function handleHash() {
+        const hash = window.location.hash;
+        if (hash === '#signup') {
+          switchTab('signup');
+        } else if (hash === '#forgot') {
+          showView('forgot');
+        } else if (hash.includes('reset') || hash.includes('type=recovery')) {
+          showView('reset');
+        } else {
+          switchTab('signin');
+        }
+      }
+
+      window.addEventListener('hashchange', handleHash);
+
+      function hideAlert() {
+        authAlert.classList.add('hidden');
+        authAlert.className = 'auth-alert hidden';
+      }
+
+      function showAlert(message, type = 'error') {
+        authAlertText.textContent = message;
+        authAlert.className = `auth-alert auth-alert--${type}`;
+        authAlert.classList.remove('hidden');
+      }
+
+      function switchTab(tab) {
+        hideAlert();
+        authTabs.style.display = 'flex';
+        if (tab === 'signin') {
+          tabSignIn.classList.add('active');
+          tabSignUp.classList.remove('active');
+          viewSignIn.classList.add('active');
+          viewSignUp.classList.remove('active');
+          viewForgot.classList.remove('active');
+          viewResetPassword.classList.remove('active');
+          authSubtitle.textContent = 'Welcome back! Sign in to sync your tasks.';
+        } else {
+          tabSignUp.classList.add('active');
+          tabSignIn.classList.remove('active');
+          viewSignUp.classList.add('active');
+          viewSignIn.classList.remove('active');
+          viewForgot.classList.remove('active');
+          viewResetPassword.classList.remove('active');
+          authSubtitle.textContent = 'Create your account to unlock cloud sync.';
+        }
+      }
+
+      function showView(view) {
+        hideAlert();
+        if (view === 'forgot') {
+          authTabs.style.display = 'none';
+          viewSignIn.classList.remove('active');
+          viewSignUp.classList.remove('active');
+          viewForgot.classList.add('active');
+          viewResetPassword.classList.remove('active');
+          authSubtitle.textContent = 'Reset your account password.';
+        } else if (view === 'reset') {
+          authTabs.style.display = 'none';
+          viewSignIn.classList.remove('active');
+          viewSignUp.classList.remove('active');
+          viewForgot.classList.remove('active');
+          viewResetPassword.classList.add('active');
+          authSubtitle.textContent = 'Enter your new password.';
+        }
+      }
+
+      tabSignIn.addEventListener('click', () => {
+        window.location.hash = '';
+        switchTab('signin');
+      });
+
+      tabSignUp.addEventListener('click', () => {
+        window.location.hash = '#signup';
+        switchTab('signup');
+      });
+
+      document.getElementById('goToForgotBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.hash = '#forgot';
+        showView('forgot');
+      });
+
+      document.getElementById('backToSignInFromForgot').addEventListener('click', () => {
+        window.location.hash = '';
+        switchTab('signin');
+      });
+
+      // Password Visibility Toggle
+      document.querySelectorAll('.auth-toggle-pwd').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const input = document.getElementById(targetId);
+          if (!input) return;
+          if (input.type === 'password') {
+            input.type = 'text';
+            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+          } else {
+            input.type = 'password';
+            btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+          }
+        });
+      });
+
+      // Password Strength Meter
+      const signUpPasswordInput = document.getElementById('signUpPassword');
+      const pwdStrengthFill = document.getElementById('pwdStrengthFill');
+      const pwdStrengthText = document.getElementById('pwdStrengthText');
+
+      signUpPasswordInput.addEventListener('input', () => {
+        const pwd = signUpPasswordInput.value;
+        if (!pwd) {
+          pwdStrengthFill.style.width = '0%';
+          pwdStrengthText.textContent = 'Enter password';
+          return;
+        }
+
+        let score = 0;
+        if (pwd.length >= 6) score++;
+        if (pwd.length >= 10) score++;
+        if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+        if (/[0-9]/.test(pwd) || /[^A-Za-z0-9]/.test(pwd)) score++;
+
+        if (score <= 1) {
+          pwdStrengthFill.style.width = '25%';
+          pwdStrengthFill.style.backgroundColor = 'var(--color-danger)';
+          pwdStrengthText.textContent = 'Weak';
+          pwdStrengthText.style.color = 'var(--color-danger)';
+        } else if (score === 2) {
+          pwdStrengthFill.style.width = '50%';
+          pwdStrengthFill.style.backgroundColor = '#f59e0b';
+          pwdStrengthText.textContent = 'Fair';
+          pwdStrengthText.style.color = '#f59e0b';
+        } else if (score === 3) {
+          pwdStrengthFill.style.width = '75%';
+          pwdStrengthFill.style.backgroundColor = '#3b82f6';
+          pwdStrengthText.textContent = 'Good';
+          pwdStrengthText.style.color = '#3b82f6';
+        } else {
+          pwdStrengthFill.style.width = '100%';
+          pwdStrengthFill.style.backgroundColor = 'var(--color-success)';
+          pwdStrengthText.textContent = 'Strong';
+          pwdStrengthText.style.color = 'var(--color-success)';
+        }
+      });
+
+      // Button Loading Helper
+      function setButtonLoading(btn, isLoading, defaultText) {
+        btn.disabled = isLoading;
+        if (isLoading) {
+          btn.innerHTML = `<span class="auth-spinner" aria-hidden="true"></span><span>Processing...</span>`;
+        } else {
+          btn.innerHTML = `<span class="btn-text">${defaultText}</span>`;
+        }
+      }
+
+      // 1. Submit Sign In
+      document.getElementById('signInForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+
+        const email = document.getElementById('signInEmail').value.trim();
+        const password = document.getElementById('signInPassword').value;
+        const btn = document.getElementById('signInSubmitBtn');
+
+        if (!email || !password) {
+          showAlert('Please enter both email and password.');
+          return;
+        }
+
+        setButtonLoading(btn, true, 'Sign In');
+
+        const { data, error } = await window.AuthManager.signIn(email, password);
+
+        if (error) {
+          setButtonLoading(btn, false, 'Sign In');
+          showAlert(error.message || 'Invalid login credentials. Please try again.');
+          document.getElementById('signInPassword').classList.add('input-error');
+          setTimeout(() => document.getElementById('signInPassword').classList.remove('input-error'), 500);
+          return;
+        }
+
+        showAlert('Successfully signed in! Opening dashboard...', 'success');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 600);
+      });
+
+      // 2. Submit Sign Up
+      document.getElementById('signUpForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+
+        const name = document.getElementById('signUpName').value.trim();
+        const email = document.getElementById('signUpEmail').value.trim();
+        const password = document.getElementById('signUpPassword').value;
+        const confirm = document.getElementById('signUpConfirmPassword').value;
+        const btn = document.getElementById('signUpSubmitBtn');
+
+        if (!name) {
+          showAlert('Please enter your full name.');
+          return;
+        }
+        if (!email) {
+          showAlert('Please enter a valid email address.');
+          return;
+        }
+        if (password.length < 6) {
+          showAlert('Password must be at least 6 characters long.');
+          return;
+        }
+        if (password !== confirm) {
+          showAlert('Passwords do not match.');
+          return;
+        }
+
+        setButtonLoading(btn, true, 'Create Free Account');
+
+        const { data, error } = await window.AuthManager.signUp(email, password, name);
+
+        setButtonLoading(btn, false, 'Create Free Account');
+
+        if (error) {
+          showAlert(error.message || 'Failed to create account. Please try again.');
+          return;
+        }
+
+        // Check if session was immediately created or email verification needed
+        if (data?.session) {
+          showAlert('Account created successfully! Opening your dashboard...', 'success');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 800);
+        } else {
+          showAlert('Account created! Please check your email inbox to verify your address.', 'success');
+        }
+      });
+
+      // 3. Submit Forgot Password
+      document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+
+        const email = document.getElementById('forgotEmail').value.trim();
+        const btn = document.getElementById('forgotSubmitBtn');
+
+        if (!email) {
+          showAlert('Please enter your email address.');
+          return;
+        }
+
+        setButtonLoading(btn, true, 'Send Reset Link');
+
+        const { error } = await window.AuthManager.resetPassword(email);
+
+        setButtonLoading(btn, false, 'Send Reset Link');
+
+        if (error) {
+          showAlert(error.message || 'Could not send reset link. Check your email address.');
+          return;
+        }
+
+        showAlert('Password reset link has been dispatched to your email!', 'success');
+      });
+
+      // 4. Submit Update Password
+      document.getElementById('resetPasswordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlert();
+
+        const newPassword = document.getElementById('newPassword').value;
+        const btn = document.getElementById('resetPasswordSubmitBtn');
+
+        if (newPassword.length < 6) {
+          showAlert('Password must be at least 6 characters.');
+          return;
+        }
+
+        setButtonLoading(btn, true, 'Save New Password');
+
+        const { error } = await window.AuthManager.updatePassword(newPassword);
+
+        setButtonLoading(btn, false, 'Save New Password');
+
+        if (error) {
+          showAlert(error.message || 'Could not update password.');
+          return;
+        }
+
+        showAlert('Password updated successfully! Redirecting to dashboard...', 'success');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1000);
+      });
+
+      // Theme toggle support on auth page
+      const authThemeToggle = document.getElementById('authThemeToggle');
+      if (authThemeToggle) {
+        authThemeToggle.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme') || 'dark';
+          const next = current === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+
+          try {
+            const raw = localStorage.getItem('taskflow_preferences');
+            const prefs = raw ? JSON.parse(raw) : {};
+            prefs.themeMode = next;
+            localStorage.setItem('taskflow_preferences', JSON.stringify(prefs));
+          } catch (e) {}
+        });
+      }
+
+      // Initial hash check
+      handleHash();
+    });
+  </script>
+</body>
+</html>
