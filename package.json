@@ -2,10 +2,10 @@
   "name": "todo-app",
   "version": "1.0.0",
   "description": "TaskFlow - Modern Browser To-Do List Application",
-  "main": "server.js",
   "scripts": {
-    "dev": "node server.js",
-    "start": "node server.js"
+    "dev": "node dev-server.js",
+    "start": "node dev-server.js",
+    "build": "echo 'Static assets ready'"
   },
   "keywords": [
     "todo",
