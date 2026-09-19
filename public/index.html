@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow — Focus & Productivity</title>
+  <meta name="description" content="A lightweight, fast, offline-first browser To-Do list with safe localStorage persistence and rich ergonomics." />
+  
+  <!-- Modern Typography (Inter, Outfit, Merriweather, Fira Code) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,300&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- App Stylesheets -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+    <main class="todo-container" role="main">
+      
+      <!-- Top Header -->
+      <header class="app-header">
+        <div class="app-header__brand">
+          <div class="app-header__logo" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div class="app-header__title-group">
+            <h1 class="app-header__title">TaskFlow</h1>
+            <span class="app-header__date-badge">
+              <span class="app-header__pulse-dot" aria-hidden="true"></span>
+              <span id="currentDate">Today</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="app-header__controls">
+          <!-- Auth Trigger / User Profile Widget -->
+          <div id="userHeaderWidget" class="user-profile-widget">
+            <a href="auth.html" id="authNavBtn" class="btn-auth-header" title="Sign In to Cloud Sync">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span>Sign In</span>
+            </a>
+
+            <!-- Populated dynamically if authenticated -->
+            <div id="userProfileContainer" class="hidden">
+              <button id="userAvatarBtn" class="user-avatar-btn" aria-haspopup="true" aria-expanded="false" title="User Account">
+                <span id="userAvatarText">U</span>
+              </button>
+              <div id="userProfileMenu" class="user-profile-menu hidden" role="menu">
+                <div class="user-profile-info">
+                  <div id="menuUserName" class="user-profile-name">User</div>
+                  <div id="menuUserEmail" class="user-profile-email">user@example.com</div>
+                  <div class="user-profile-badge">
+                    <span class="user-profile-badge-dot"></span>
+                    <span>Cloud Sync Active</span>
+                  </div>
+                </div>
+                <button type="button" class="user-menu-item" id="menuSettingsBtn" role="menuitem">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                  </svg>
+                  <span>Preferences</span>
+                </button>
+                <button type="button" class="user-menu-item user-menu-item--danger" id="menuSignOutBtn" role="menuitem">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button id="themeToggle" class="icon-btn" aria-label="Toggle light/dark theme" title="Quick toggle theme">
+            <svg class="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <button id="settingsBtn" class="icon-btn" aria-label="Open Appearance & Preferences Settings" title="Appearance Settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+          <button id="shortcutsBtn" class="icon-btn" aria-label="View keyboard shortcuts" title="Keyboard shortcuts (Ctrl + /)">
+            <span class="kbd-badge">⌘/</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Task Input Form Section -->
+      <section class="input-section" aria-label="Add new task">
+        <form id="taskForm" class="task-form" autocomplete="off">
+          <span class="task-form__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </span>
+          <input 
+            type="text" 
+            id="taskInput" 
+            class="task-input" 
+            placeholder="Add a new task... (Press Enter to save)" 
+            maxlength="200"
+            aria-label="New task description"
+            aria-describedby="inputError"
+          />
+          <div class="task-form__actions">
+            <select id="taskPrioritySelect" class="task-priority-select" aria-label="Select priority level" title="Priority level">
+              <option value="none">Priority: Normal</option>
+              <option value="low">Priority: Low</option>
+              <option value="medium">Priority: Med</option>
+              <option value="high">Priority: High</option>
+            </select>
+            <span class="kbd-badge sr-mobile">↵ Enter</span>
+            <button type="submit" id="addBtn" class="btn-primary" aria-label="Add task">
+              <span>Add</span>
+            </button>
+          </div>
+        </form>
+        <div id="inputError" class="input-error-msg hidden" role="alert" aria-live="assertive"></div>
+      </section>
+
+      <!-- Controls & Filter Toolbar -->
+      <section class="controls-toolbar" aria-label="Filter and search tasks">
+        <div class="filter-group" role="group" aria-label="Task status filters">
+          <button type="button" class="filter-btn filter-btn--active" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="filter-btn" data-filter="active" aria-pressed="false">Active</button>
+          <button type="button" class="filter-btn" data-filter="completed" aria-pressed="false">Completed</button>
+        </div>
+        <div class="search-box">
+          <span class="search-box__icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Quick find..." aria-label="Quick search tasks" />
+        </div>
+      </section>
+
+      <!-- Task List Container -->
+      <ul id="taskList" class="task-list" role="list" aria-label="Task items list" aria-live="polite">
+        <!-- Dynamically rendered by ui.js -->
+      </ul>
+
+      <!-- Empty State View -->
+      <div id="emptyState" class="empty-state hidden" aria-live="polite">
+        <div class="empty-state__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <h2 class="empty-state__title">Clear slate, focused mind</h2>
+        <p id="emptyMessage" class="empty-state__desc">No tasks yet — add one above!</p>
+      </div>
+
+      <!-- Stats and Actions Bar -->
+      <footer class="stats-bar">
+        <span id="taskCount" aria-live="polite">0 items left</span>
+        <div id="progressBarContainer" class="progress-bar-container hidden" aria-label="Completion progress">
+          <span id="progressText" class="progress-bar-text">0%</span>
+          <div class="progress-bar-track">
+            <div id="progressBarFill" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+        <button id="clearBtn" class="clear-btn hidden" type="button">Clear completed</button>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- Preferences & Appearance Settings Modal Dialog -->
+  <div id="settingsModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal-dialog modal-dialog--settings">
+      <div class="modal-header">
+        <div class="modal-header__title-group">
+          <div class="modal-header__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 id="settingsModalTitle" class="modal-title">Appearance &amp; Settings</h3>
+            <p class="modal-subtitle">Personalize your theme, fonts, and workspace aesthetic</p>
+          </div>
+        </div>
+        <button id="settingsCloseBtn" class="icon-btn" aria-label="Close settings modal">✕</button>
+      </div>
+
+      <div class="settings-body">
+        
+        <!-- 1. Dark Mode Setting -->
+        <section class="settings-section">
+          <div class="settings-section__header">
+            <span class="settings-section__title">Dark Mode &amp; Display</span>
+            <span class="settings-section__desc">Select lighting mode</span>
+          </div>
+          <div class="segmented-control" role="radiogroup" aria-label="Dark Mode Options">
+            <button type="button" class="segmented-btn theme-mode-btn" data-theme-mode="system" role="radio" aria-checked="false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              <span>System</span>
+            </button>
+            <button type="button" class="segmented-btn theme-mode-btn" data-theme-mode="light" role="radio" aria-checked="false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+              <span>Light</span>
+            </button>
+            <button type="button" class="segmented-btn theme-mode-btn active" data-theme-mode="dark" role="radio" aria-checked="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              <span>Dark</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- 2. Theme Accent Color Setting -->
+        <section class="settings-section">
+          <div class="settings-section__header">
+            <span class="settings-section__title">Accent Color Theme</span>
+            <span class="settings-section__desc">Vibrant brand &amp; interactive highlights</span>
+          </div>
+          <div class="color-swatches" role="radiogroup" aria-label="Accent Color Palette">
+            <button type="button" class="color-swatch-btn accent-color-btn active" data-accent="violet" role="radio" aria-checked="true" aria-label="Electric Violet accent" title="Electric Violet">
+              <span class="swatch-circle swatch-circle--violet"></span>
+              <span class="swatch-label">Violet</span>
+            </button>
+            <button type="button" class="color-swatch-btn accent-color-btn" data-accent="emerald" role="radio" aria-checked="false" aria-label="Emerald Green accent" title="Emerald Green">
+              <span class="swatch-circle swatch-circle--emerald"></span>
+              <span class="swatch-label">Emerald</span>
+            </button>
+            <button type="button" class="color-swatch-btn accent-color-btn" data-accent="cyan" role="radio" aria-checked="false" aria-label="Ocean Cyan accent" title="Ocean Cyan">
+              <span class="swatch-circle swatch-circle--cyan"></span>
+              <span class="swatch-label">Cyan</span>
+            </button>
+            <button type="button" class="color-swatch-btn accent-color-btn" data-accent="amber" role="radio" aria-checked="false" aria-label="Sunset Amber accent" title="Sunset Amber">
+              <span class="swatch-circle swatch-circle--amber"></span>
+              <span class="swatch-label">Amber</span>
+            </button>
+            <button type="button" class="color-swatch-btn accent-color-btn" data-accent="rose" role="radio" aria-checked="false" aria-label="Crimson Rose accent" title="Crimson Rose">
+              <span class="swatch-circle swatch-circle--rose"></span>
+              <span class="swatch-label">Rose</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- 3. Text Style Settings (Font Family & Font Size) -->
+        <section class="settings-section">
+          <div class="settings-section__header">
+            <span class="settings-section__title">Text Style &amp; Typography</span>
+            <span class="settings-section__desc">Font family and reading scale</span>
+          </div>
+          
+          <!-- Font Family Grid -->
+          <div class="font-family-grid" role="radiogroup" aria-label="Font Family">
+            <button type="button" class="font-option-btn font-family-btn active" data-font="inter" role="radio" aria-checked="true">
+              <span class="font-preview font-preview--inter">Aa</span>
+              <div class="font-info">
+                <span class="font-name">Inter</span>
+                <span class="font-category">Clean Modern Sans</span>
+              </div>
+            </button>
+            <button type="button" class="font-option-btn font-family-btn" data-font="outfit" role="radio" aria-checked="false">
+              <span class="font-preview font-preview--outfit">Aa</span>
+              <div class="font-info">
+                <span class="font-name">Outfit</span>
+                <span class="font-category">Geometric Friendly</span>
+              </div>
+            </button>
+            <button type="button" class="font-option-btn font-family-btn" data-font="serif" role="radio" aria-checked="false">
+              <span class="font-preview font-preview--serif">Aa</span>
+              <div class="font-info">
+                <span class="font-name">Merriweather</span>
+                <span class="font-category">Classic Editorial Serif</span>
+              </div>
+            </button>
+            <button type="button" class="font-option-btn font-family-btn" data-font="mono" role="radio" aria-checked="false">
+              <span class="font-preview font-preview--mono">&lt;&gt;</span>
+              <div class="font-info">
+                <span class="font-name">Fira Code</span>
+                <span class="font-category">Developer Monospace</span>
+              </div>
+            </button>
+          </div>
+
+          <!-- Font Size Scale -->
+          <div class="font-size-scale" role="radiogroup" aria-label="Font Size">
+            <span class="sub-label">Size Scale:</span>
+            <div class="segmented-control segmented-control--sm">
+              <button type="button" class="segmented-btn font-size-btn" data-font-size="compact" role="radio" aria-checked="false">Compact</button>
+              <button type="button" class="segmented-btn font-size-btn active" data-font-size="normal" role="radio" aria-checked="true">Normal</button>
+              <button type="button" class="segmented-btn font-size-btn" data-font-size="large" role="radio" aria-checked="false">Comfortable</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Background Settings -->
+        <section class="settings-section">
+          <div class="settings-section__header">
+            <span class="settings-section__title">Background Aesthetic</span>
+            <span class="settings-section__desc">Select ambient canvas wallpaper</span>
+          </div>
+          <div class="bg-options-grid" role="radiogroup" aria-label="Background Styles">
+            <button type="button" class="bg-card-btn bg-style-btn active" data-bg-style="glow" role="radio" aria-checked="true">
+              <div class="bg-preview bg-preview--glow"></div>
+              <span class="bg-card-label">Ambient Glow</span>
+            </button>
+            <button type="button" class="bg-card-btn bg-style-btn" data-bg-style="dots" role="radio" aria-checked="false">
+              <div class="bg-preview bg-preview--dots"></div>
+              <span class="bg-card-label">Dot Grid</span>
+            </button>
+            <button type="button" class="bg-card-btn bg-style-btn" data-bg-style="gradient" role="radio" aria-checked="false">
+              <div class="bg-preview bg-preview--gradient"></div>
+              <span class="bg-card-label">Gradient Flow</span>
+            </button>
+            <button type="button" class="bg-card-btn bg-style-btn" data-bg-style="solid" role="radio" aria-checked="false">
+              <div class="bg-preview bg-preview--solid"></div>
+              <span class="bg-card-label">Clean Minimal</span>
+            </button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Task Confirmation Modal Dialog -->
+  <div id="deleteModal" class="modal-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="deleteModalTitle" aria-describedby="deleteModalDesc">
+    <div class="modal-dialog modal-dialog--confirm">
+      <div class="confirm-dialog__icon-wrapper" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </div>
+      <div class="confirm-dialog__content">
+        <h3 id="deleteModalTitle" class="confirm-dialog__title">Delete Task?</h3>
+        <p id="deleteModalDesc" class="confirm-dialog__desc">Are you sure you want to delete this task? This action cannot be undone.</p>
+      </div>
+      <div class="confirm-dialog__actions">
+        <button type="button" id="cancelDeleteBtn" class="btn-secondary">Cancel</button>
+        <button type="button" id="confirmDeleteBtn" class="btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keyboard Shortcuts Modal Dialog -->
+  <div id="shortcutsModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalTitle" class="modal-title">Keyboard Shortcuts</h3>
+        <button id="modalCloseBtn" class="icon-btn" aria-label="Close modal">✕</button>
+      </div>
+      <div class="shortcuts-grid">
+        <div class="shortcut-item">
+          <span>Add Task</span>
+          <span class="kbd-badge">Enter ↵</span>
+        </div>
+        <div class="shortcut-item">
+          <span>Edit Task</span>
+          <span class="kbd-badge">Double Click</span>
+        </div>
+        <div class="shortcut-item">
+          <span>Cancel Edit</span>
+          <span class="kbd-badge">Esc</span>
+        </div>
+        <div class="shortcut-item">
+          <span>Toggle Theme</span>
+          <span class="kbd-badge">Click ☼/☾</span>
+        </div>
+        <div class="shortcut-item">
+          <span>Shortcuts Help</span>
+          <span class="kbd-badge">Ctrl + /</span>
+        </div>
+        <div class="shortcut-item">
+          <span>Navigate</span>
+          <span class="kbd-badge">Tab</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase Official JS SDK & Auth Layer -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/auth.js"></script>
+
+  <!-- Application Scripts (Loaded strictly in architectural dependency order) -->
+  <!-- 1. Constants first — dependencies: none -->
+  <script src="js/constants.js"></script>
+  <!-- 2. Storage layer — safe localStorage wrapper -->
+  <script src="js/storage.js"></script>
+  <!-- 3. Business logic — pure state and task rules -->
+  <script src="js/taskManager.js"></script>
+  <!-- 4. UI layer — rendering and DOM manipulation -->
+  <script src="js/ui.js"></script>
+  <!-- 5. Controller last — orchestration and event delegation -->
+  <script src="js/main.js"></script>
+</body>
+</html>

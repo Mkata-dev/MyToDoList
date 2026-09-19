@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "description": "TaskFlow - Modern Browser To-Do List Application",
+  "main": "server.js",
   "scripts": {
-    "dev": "node dev-server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "keywords": [
     "todo",
