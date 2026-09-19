@@ -4,7 +4,6 @@
   "description": "TaskFlow - Modern Browser To-Do List Application",
   "scripts": {
     "dev": "node dev-server.js",
-    "start": "node dev-server.js",
     "build": "echo 'Static assets ready'"
   },
   "keywords": [
