@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "TaskFlow - Modern Browser To-Do List Application",
   "scripts": {
-    "dev": "node dev-server.js",
-    "build": "echo 'Static assets ready'"
+    "dev": "node dev-server.js"
   },
   "keywords": [
     "todo",
