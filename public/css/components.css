@@ -15,11 +15,14 @@
   padding: var(--space-lg);
   backdrop-filter: blur(12px);
   transition: all var(--transition-normal);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 640px) {
   .todo-container {
-    padding: var(--space-md);
+    padding: 14px 12px;
     border-radius: var(--radius-lg);
   }
 }
@@ -34,12 +37,18 @@
   padding-bottom: var(--space-md);
   border-bottom: 1px solid var(--color-border);
   gap: var(--space-sm);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .app-header__brand {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .app-header__logo {
@@ -57,6 +66,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .app-header__title {
@@ -64,6 +75,7 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text);
+  white-space: nowrap;
 }
 
 .app-header__date-badge {
@@ -95,6 +107,71 @@
   display: flex;
   align-items: center;
   gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    gap: 6px;
+    padding-bottom: var(--space-sm);
+  }
+
+  .app-header__brand {
+    gap: 6px;
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .app-header__title-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .app-header__title {
+    font-size: 1.125rem;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-header__date-badge {
+    background: transparent;
+    padding: 0;
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+
+  .app-header__pulse-dot {
+    width: 5px;
+    height: 5px;
+  }
+
+  /* Keyboard shortcuts are not applicable on mobile touch screens */
+  #shortcutsBtn {
+    display: none !important;
+  }
+
+  .app-header__controls {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-header__logo {
+    width: 30px;
+    height: 30px;
+  }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .icon-btn {
@@ -145,6 +222,9 @@
   padding: 6px 6px 6px 14px;
   gap: var(--space-sm);
   transition: all var(--transition-fast);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .task-form:focus-within {
@@ -153,9 +233,25 @@
   box-shadow: var(--shadow-glow);
 }
 
+.task-form__input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
+  min-width: 0;
+}
+
 .task-form__icon {
   color: var(--color-text-muted);
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.task-form:focus-within .task-form__icon {
+  color: var(--color-primary);
 }
 
 .task-input {
@@ -167,6 +263,9 @@
   font-size: var(--font-size-md);
   outline: none;
   min-width: 0;
+  padding: 6px 0;
+  /* Prevent iOS auto-zoom on focus (needs >= 16px) */
+  font-size: max(16px, var(--font-size-md));
 }
 
 .task-input::placeholder {
@@ -228,6 +327,67 @@
   transform: translateY(0);
 }
 
+/* Mobile 2-Tier Task Form Layout */
+@media (max-width: 640px) {
+  .task-form {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px 10px;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .task-form__input-wrapper {
+    width: 100%;
+    min-height: 40px;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .task-form__icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .task-input {
+    min-height: 40px;
+    font-size: 16px;
+    line-height: 1.4;
+    padding: 6px 0;
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  .task-form__actions {
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border);
+    gap: 8px;
+  }
+
+  .task-priority-select {
+    padding: 6px 8px;
+    min-height: 36px;
+    font-size: var(--font-size-xs);
+    border-radius: var(--radius-md);
+    flex: 1;
+    max-width: 145px;
+    box-sizing: border-box;
+  }
+
+  .btn-primary {
+    min-height: 36px;
+    padding: 6px 18px;
+    font-size: var(--font-size-xs);
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+  }
+}
+
 .input-error-msg {
   display: flex;
   align-items: center;
@@ -262,6 +422,43 @@
   margin-top: var(--space-md);
   gap: var(--space-sm);
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .controls-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .filter-group {
+    width: 100%;
+    display: flex;
+    justify-content: stretch;
+    box-sizing: border-box;
+  }
+
+  .filter-btn {
+    flex: 1;
+    text-align: center;
+    padding: 6px 4px;
+    font-size: var(--font-size-xs);
+  }
+
+  .search-box {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .search-input {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
 }
 
 .filter-group {
@@ -302,7 +499,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  min-width: 180px;
+  min-width: 140px;
 }
 
 .search-box__icon {
@@ -338,6 +535,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .task-item {
@@ -351,6 +551,10 @@
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
   animation: slideIn 0.25s ease-out;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .task-item:hover,
@@ -597,6 +801,7 @@
   font-weight: 500;
   color: var(--color-text);
   word-break: break-word;
+  overflow-wrap: anywhere;
   transition: all var(--transition-fast);
   cursor: pointer;
 }
@@ -669,6 +874,56 @@
   color: var(--color-danger);
 }
 
+/* Mobile responsive task item layout */
+@media (max-width: 640px) {
+  .task-list {
+    margin-top: var(--space-sm);
+    gap: 6px;
+  }
+
+  .task-item {
+    padding: 10px 10px;
+    gap: 8px;
+  }
+
+  .task-item__content {
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .task-item__text-row {
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .task-item__text {
+    font-size: 0.9375rem;
+    line-height: 1.35;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  /* On mobile touch devices, keep Delete and Three Dots immediately accessible.
+     The Three Dots context menu already holds Pin, Edit, Copy, Priority, and Delete.
+     If pinned, keep the pin button styled actively. */
+  .task-item__btn--pin:not(.task-item__btn--pinned),
+  .task-item__btn--edit {
+    display: none !important;
+  }
+
+  .task-item__actions {
+    gap: 2px;
+    opacity: 1;
+    flex-shrink: 0;
+  }
+
+  .task-item__btn {
+    width: 34px;
+    height: 34px;
+  }
+}
+
 /* Three Dots Context Menu Dropdown */
 .task-item__menu-wrapper {
   position: relative;
@@ -681,6 +936,7 @@
   top: calc(100% + 6px);
   right: 0;
   min-width: 165px;
+  max-width: min(220px, calc(100vw - 24px));
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -914,6 +1170,7 @@
   justify-content: center;
   z-index: 100;
   padding: var(--space-md);
+  box-sizing: border-box;
 }
 
 .modal-dialog {
@@ -928,6 +1185,7 @@
   flex-direction: column;
   gap: var(--space-md);
   animation: modalIn 0.2s ease-out;
+  box-sizing: border-box;
 }
 
 @keyframes modalIn {
@@ -955,6 +1213,13 @@
   gap: var(--space-sm);
 }
 
+@media (max-width: 500px) {
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
 .shortcut-item {
   display: flex;
   align-items: center;
@@ -974,6 +1239,52 @@
   max-height: 88vh;
   padding: var(--space-md) var(--space-lg);
   overflow-y: auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 8px;
+  }
+
+  .modal-dialog {
+    padding: 16px 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .modal-dialog--settings {
+    padding: 16px 10px;
+    max-height: 92vh;
+  }
+
+  .font-size-scale {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .font-size-scale .segmented-control {
+    width: 100%;
+  }
+
+  .segmented-btn {
+    padding: 6px 4px;
+    font-size: 0.72rem;
+    gap: 4px;
+  }
+
+  .color-swatches {
+    gap: 6px;
+  }
+
+  .color-swatch-btn {
+    padding: 5px 8px;
+    gap: 6px;
+  }
+
+  .swatch-label {
+    font-size: 0.75rem;
+  }
 }
 
 .modal-header__title-group {
@@ -1432,7 +1743,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 12px;
+  padding: 6px 12px;
+  min-height: 36px;
   background: var(--color-primary-light);
   color: var(--color-primary);
   border: 1px solid rgba(99, 102, 241, 0.3);
@@ -1443,6 +1755,7 @@
   text-decoration: none;
   cursor: pointer;
   transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
 .btn-auth-header:hover {
@@ -1451,6 +1764,40 @@
   border-color: var(--color-primary);
   box-shadow: var(--shadow-glow);
   transform: translateY(-1px);
+}
+
+.btn-auth-header:active {
+  transform: translateY(0);
+}
+
+.btn-auth-header svg {
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.btn-auth-header:hover svg {
+  transform: scale(1.08);
+}
+
+@media (max-width: 640px) {
+  .btn-auth-header {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    gap: 5px;
+    min-height: 34px;
+  }
+}
+
+/* Graceful fallback only for ultra-narrow screens (< 330px) */
+@media (max-width: 330px) {
+  .btn-auth-header {
+    padding: 6px 8px;
+    gap: 0;
+  }
+
+  .btn-auth-header > span {
+    display: none;
+  }
 }
 
 .user-profile-widget {
@@ -1488,6 +1835,8 @@
   top: calc(100% + 8px);
   right: 0;
   width: 240px;
+  max-width: min(240px, calc(100vw - 20px));
+  box-sizing: border-box;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
