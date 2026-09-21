@@ -109,21 +109,25 @@
       <!-- Task Input Form Section -->
       <section class="input-section" aria-label="Add new task">
         <form id="taskForm" class="task-form" autocomplete="off">
-          <span class="task-form__icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </span>
-          <input 
-            type="text" 
-            id="taskInput" 
-            class="task-input" 
-            placeholder="Add a new task... (Press Enter to save)" 
-            maxlength="200"
-            aria-label="New task description"
-            aria-describedby="inputError"
-          />
+          <div class="task-form__input-wrapper">
+            <span class="task-form__icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </span>
+            <input 
+              type="text" 
+              id="taskInput" 
+              class="task-input" 
+              placeholder="What needs to be done?" 
+              maxlength="200"
+              aria-label="New task description"
+              aria-describedby="inputError"
+              autocapitalize="sentences"
+              enterkeyhint="done"
+            />
+          </div>
           <div class="task-form__actions">
             <select id="taskPrioritySelect" class="task-priority-select" aria-label="Select priority level" title="Priority level">
               <option value="none">Priority: Normal</option>
