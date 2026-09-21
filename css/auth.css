@@ -230,7 +230,8 @@
   width: 100%;
   height: 46px;
   padding: 0 42px 0 42px;
-  font-size: var(--font-size-sm);
+  /* min 16px prevents iOS auto-zoom on tap */
+  font-size: max(16px, var(--font-size-sm));
   font-family: inherit;
   color: var(--color-text);
   background: var(--color-surface-subtle);
@@ -471,12 +472,31 @@
 
   .auth-top-nav {
     position: static;
-    padding: var(--space-md) var(--space-xs);
+    padding: var(--space-sm) var(--space-xs);
     margin-bottom: var(--space-sm);
   }
 
   .auth-card {
     padding: var(--space-lg) var(--space-md);
     border-radius: var(--radius-lg);
+    /* Prevent card from being wider than screen */
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .auth-title {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* Extra-small screens */
+@media (max-width: 360px) {
+  .auth-top-nav {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .auth-nav-link span {
+    display: none;
   }
 }

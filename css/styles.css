@@ -303,3 +303,17 @@ body::before {
     margin: var(--space-sm) auto;
   }
 }
+
+/* Hide keyboard shortcut hint on mobile — saves space in the task form */
+@media (max-width: 480px) {
+  .sr-mobile {
+    display: none !important;
+  }
+}
+
+/* On very small screens, hide the date badge to prevent header overflow */
+@media (max-width: 360px) {
+  .app-header__date-badge {
+    display: none;
+  }
+}

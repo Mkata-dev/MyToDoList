@@ -34,12 +34,16 @@
   padding-bottom: var(--space-md);
   border-bottom: 1px solid var(--color-border);
   gap: var(--space-sm);
+  min-width: 0;
 }
 
 .app-header__brand {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .app-header__logo {
@@ -57,6 +61,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .app-header__title {
@@ -64,6 +70,7 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text);
+  white-space: nowrap;
 }
 
 .app-header__date-badge {
@@ -95,6 +102,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-xs);
+  flex-shrink: 0;
 }
 
 .icon-btn {
@@ -139,6 +147,7 @@
 .task-form {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   background: var(--color-surface-subtle);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -166,7 +175,9 @@
   font-family: var(--font-family);
   font-size: var(--font-size-md);
   outline: none;
-  min-width: 0;
+  min-width: 120px;
+  /* Prevent iOS auto-zoom on focus (needs >= 16px) */
+  font-size: max(16px, var(--font-size-md));
 }
 
 .task-input::placeholder {
@@ -264,6 +275,26 @@
   flex-wrap: wrap;
 }
 
+@media (max-width: 480px) {
+  .controls-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group {
+    justify-content: center;
+  }
+
+  .search-box {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+}
+
 .filter-group {
   display: flex;
   align-items: center;
@@ -302,7 +333,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  min-width: 180px;
+  min-width: 140px;
 }
 
 .search-box__icon {
@@ -1443,6 +1474,7 @@
   text-decoration: none;
   cursor: pointer;
   transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
 .btn-auth-header:hover {
@@ -1451,6 +1483,18 @@
   border-color: var(--color-primary);
   box-shadow: var(--shadow-glow);
   transform: translateY(-1px);
+}
+
+/* On very small screens, collapse Sign In button to icon-only */
+@media (max-width: 400px) {
+  .btn-auth-header {
+    padding: 6px 8px;
+    gap: 0;
+  }
+
+  .btn-auth-header > span {
+    display: none;
+  }
 }
 
 .user-profile-widget {
